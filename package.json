@@ -2,7 +2,7 @@
   "name": "amplitude",
   "version": "4.0.1",
   "description": "A node wrapper for Amplitude analytics http api",
-  "author": "Blade Barringer <blade@geoffdutton.com>",
+  "author": "Blade Barringer <blade@crookedneighbor.com>",
   "files": [
     "amplitude.js"
   ],
