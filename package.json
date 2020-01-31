@@ -33,7 +33,7 @@
   ],
   "scripts": {
     "contributors": "node tasks/generate-contributors-list",
-    "lint": "standard *.js test/*.js | snazzy",
+    "lint": "standard | snazzy",
     "test": "npm run lint && mocha"
   },
   "main": "amplitude.js",
