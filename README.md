@@ -1,8 +1,6 @@
 # amplitude
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/geoffdutton/amplitude.svg)](https://greenkeeper.io/)
-
-![Build Status](https://travis-ci.org/geoffdutton/amplitude.svg?branch=master) ![npm version](https://badge.fury.io/js/amplitude.svg)
+![Build Status](https://travis-ci.org/geoffdutton/amplitude.svg?branch=master) ![npm version](https://badge.fury.io/js/amplitude.svg) [![Greenkeeper badge](https://badges.greenkeeper.io/geoffdutton/amplitude.svg)](https://greenkeeper.io/)
 
 Server side implementation of [Amplitude](https://amplitude.com)'s http api.
 
