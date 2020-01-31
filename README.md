@@ -1,10 +1,6 @@
 # amplitude
 
-## Looking for a maintainer
-
-Open an issue if you would like to maintain this module.
-
-![Build Status](https://travis-ci.org/crookedneighbor/amplitude.svg?branch=master) ![npm version](https://badge.fury.io/js/amplitude.svg)
+![Build Status](https://travis-ci.org/geoffdutton/amplitude.svg?branch=master) ![npm version](https://badge.fury.io/js/amplitude.svg)
 
 Server side implementation of [Amplitude](https://amplitude.com)'s http api.
 
@@ -353,7 +349,7 @@ If the event does not exist, Amplitude will throw a 400 error.
 
 ## Changelog
 
-View the [releases page](https://github.com/crookedneighbor/amplitude/releases) for changes in each version.
+View the [releases page](https://github.com/geoffdutton/amplitude/releases) for changes in each version.
 
 <!---
 Do not change anything below this comment. It is generated automatically.

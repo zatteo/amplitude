@@ -1,8 +1,8 @@
 {
   "name": "amplitude",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "A node wrapper for Amplitude analytics http api",
-  "author": "Blade Barringer <blade@crookedneighbor.com>",
+  "author": "Blade Barringer <blade@geoffdutton.com>",
   "files": [
     "amplitude.js"
   ],
@@ -39,10 +39,10 @@
   "main": "amplitude.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/crookedneighbor/amplitude"
+    "url": "https://github.com/geoffdutton/amplitude"
   },
   "bugs": {
-    "url": "https://github.com/crookedneighbor/amplitude/issues"
+    "url": "https://github.com/geoffdutton/amplitude/issues"
   },
   "keywords": [
     "analytics",
