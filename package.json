@@ -52,11 +52,11 @@
     "superagent": "^5.2.1"
   },
   "devDependencies": {
-    "chai": "^4.1.0",
+    "chai": "^4.2.0",
     "ecmascript-version-detector": "^1.0.3",
     "glob": "^7.1.6",
     "mocha": "^7.0.1",
-    "nock": "^11.7.2",
+    "nock": "^11.8.2",
     "sinon": "^8.1.1",
     "sinon-chai": "^3.4.0",
     "snazzy": "^8.0.0",
@@ -80,5 +80,13 @@
     "ignore": [
       "nock"
     ]
+  },
+  "mocha": {
+    "colors": true,
+    "reporter": "spec",
+    "timeout": 8000,
+    "growl": true,
+    "check-leaks": true,
+    "recursive": true
   }
 }
