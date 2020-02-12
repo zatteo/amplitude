@@ -34,6 +34,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc",
     "contributors": "node tasks/generate-contributors-list",
+    "coverage": "codecov",
     "lint": "tsc --noEmit && eslint '**/*.{js,ts}'",
     "test": "npm run lint && nyc mocha",
     "tdd": "mocha --watch"
