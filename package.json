@@ -36,7 +36,7 @@
     "contributors": "node tasks/generate-contributors-list",
     "coverage": "codecov",
     "lint": "tsc --noEmit && eslint '**/*.{js,ts}'",
-    "test": "npm run lint && nyc mocha",
+    "test": "npm run lint && nyc --reporter=lcov --reporter=text mocha",
     "tdd": "mocha --watch"
   },
   "main": "dist/amplitude.js",
