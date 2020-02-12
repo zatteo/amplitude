@@ -4,7 +4,7 @@
   "description": "A node wrapper for Amplitude analytics http api",
   "author": "Blade Barringer <blade@crookedneighbor.com>",
   "files": [
-    "dist/amplitude.js"
+    "dist/**/*"
   ],
   "contributors": [
     {
@@ -32,14 +32,14 @@
     }
   ],
   "scripts": {
-    "build": "tsc --declaration",
+    "build": "rm -rf dist && tsc",
     "contributors": "node tasks/generate-contributors-list",
     "lint": "tsc --noEmit && eslint '**/*.{js,ts}'",
     "test": "npm run lint && mocha",
     "tdd": "mocha --watch"
   },
   "main": "dist/amplitude.js",
-  "types" : "dist/amplitude.d.ts",
+  "types": "dist/amplitude.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/geoffdutton/amplitude"

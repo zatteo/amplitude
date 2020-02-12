@@ -148,7 +148,7 @@ describe('userActivity', function () {
     })
   })
 
-  it('rejects with error when unsuccesful', function () {
+  it('rejects with error when unsuccessful', function () {
     const search = 'cant-find-me'
     const mockedRequest = generateMockedRequest(search, this.userSearchIds.found, 403)
 

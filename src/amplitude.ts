@@ -1,5 +1,6 @@
-/// <reference path="types/index.d.ts" />
+import './types'
 import request = require('superagent')
+
 const AMPLITUDE_TOKEN_ENDPOINT = 'https://api.amplitude.com'
 const AMPLITUDE_DASHBOARD_ENDPOINT = 'https://amplitude.com/api/2'
 
