@@ -1,7 +1,6 @@
-'use strict'
-
 const nock = require('nock')
-const Amplitude = require('../amplitude')
+const sinon = require('sinon')
+const Amplitude = require('../src/amplitude')
 
 function generateMockedRequest (userSearchId, matches, status) {
   return nock('https://amplitude.com')
@@ -18,12 +17,14 @@ function generateMockedRequest (userSearchId, matches, status) {
 }
 
 describe('userSearch', function () {
+  let userActivityStub
+
   beforeEach(function () {
     this.amplitude = new Amplitude('token', {
       secretKey: 'key'
     })
 
-    this.userActivityStub = this.sandbox.stub(this.amplitude, 'userActivity')
+    userActivityStub = sinon.stub(this.amplitude, 'userActivity')
 
     this.userSearchIds = {
       found_by_amplitude_id: {
@@ -60,6 +61,10 @@ describe('userSearch', function () {
     }
   })
 
+  afterEach(() => {
+    sinon.restore()
+  })
+
   it('throws an error if secret key is missing', function () {
     delete this.amplitude.secretKey
 
@@ -82,7 +87,8 @@ describe('userSearch', function () {
       expect(res.matches).to.be.a('array')
       expect(res.matches.length).to.eql(1)
       expect(res.type).to.eql('match_amplitude_id')
-      expect(this.userActivityStub).to.not.be.called // eslint-disable-line
+      // eslint-disable-next-line no-unused-expressions
+      expect(userActivityStub).to.not.be.called
       mockedRequest.done()
     }).catch((err) => {
       expect(err).to.equal(undefined)

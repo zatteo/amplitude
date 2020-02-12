@@ -1,7 +1,5 @@
-'use strict'
-
 const nock = require('nock')
-const Amplitude = require('../amplitude')
+const Amplitude = require('../src/amplitude')
 
 function generateMockedRequest (identity, status) {
   const mockedRequest = nock('https://api.amplitude.com')

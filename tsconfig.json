@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "target": "es6",
+    "sourceMap": true,
+    "typeRoots": [
+      "src/types",
+      "node_modules/@types"
+    ]
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules"
+  ]
+}

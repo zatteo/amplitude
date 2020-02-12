@@ -1,7 +1,5 @@
-'use strict'
-
 const nock = require('nock')
-const Amplitude = require('../amplitude')
+const Amplitude = require('../src/amplitude')
 
 function generateMockedRequest (userSearchId, matches, status) {
   let query = { user: userSearchId }

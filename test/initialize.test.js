@@ -1,11 +1,10 @@
-'use strict'
-
-const Amplitude = require('../amplitude')
+const Amplitude = require('../src/amplitude')
 
 describe('initialization', () => {
   it('throws an error if no api token is passed', () => {
     expect(() => {
-      let amplitude = new Amplitude() // eslint-disable-line
+      // eslint-disable-next-line no-new
+      new Amplitude()
     }).to.throw('No token provided')
   })
 

@@ -1,6 +1,4 @@
-'use strict'
-
-const Amplitude = require('../amplitude')
+const Amplitude = require('../src/amplitude')
 const nock = require('nock')
 
 function generateMockedRequest (query, response, status) {

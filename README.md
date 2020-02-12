@@ -13,7 +13,7 @@ npm install amplitude --save
 ## Basic Initialization
 
 ```javascript
-var Amplitude = require('amplitude')
+var Amplitude = require('src/amplitude')
 // The only required field is the api token
 var amplitude = new Amplitude('api-token')
 ```
