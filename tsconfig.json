@@ -2,10 +2,10 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "module": "es6",
+    "moduleResolution": "node",
     "declaration": true,
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
     "target": "es6",

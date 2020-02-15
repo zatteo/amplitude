@@ -1,5 +1,5 @@
 const nock = require('nock')
-const Amplitude = require('../src/amplitude')
+const Amplitude = require('../dist/amplitude')
 
 function generateMockedRequest (userSearchId, matches, status) {
   let query = { user: userSearchId }
@@ -153,6 +153,7 @@ describe('userActivity', function () {
     const mockedRequest = generateMockedRequest(search, this.userSearchIds.found, 403)
 
     return this.amplitude.userActivity(search).then((res) => {
+      expect(res).not.to.exist
       throw new Error('Should not have resolved')
     }).catch((err) => {
       expect(err.status).to.eql(403)

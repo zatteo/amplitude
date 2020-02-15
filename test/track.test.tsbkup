@@ -1,8 +1,8 @@
 import { expect } from 'chai'
-import nock = require('nock')
-import Amplitude = require('../src/amplitude')
+import nock from 'nock'
+import Amplitude, { AmplitudeQueryParams } from '../src/amplitude';
 
-function generateMockedRequest (event: AmplitudeQueryParams, status: number) {
+function generateMockedRequest (event: AmplitudeQueryParams| [AmplitudeQueryParams], status: number): nock.Scope {
   const body = `api_key=token&event=${encodeURIComponent(JSON.stringify(event))}`
   return nock('https://api.amplitude.com')
     .post('/httpapi', body)
@@ -21,7 +21,8 @@ describe('track', () => {
     })
 
     data = {
-      event_type: 'event'
+      event_type: 'event',
+
     }
 
     event = {
@@ -75,11 +76,9 @@ describe('track', () => {
     }
     const mockedRequest = generateMockedRequest(event, 200)
 
-    return amplitude.track(data).then((res) => {
+    return amplitude.track(data).then((res: any) => {
       expect(res).to.eql({ some: 'data' })
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 
@@ -117,17 +116,17 @@ describe('track', () => {
     })
   })
 
-  it('rejects when the request fails', () => {
+  it('rejects when the request fails', async () => {
     const mockedRequest = generateMockedRequest(event, 500)
-
-    return amplitude.track(data)
-      .then((res) => {
-        throw new Error('should not resolve')
-      }).catch((err) => {
-        expect(err.status).to.eql(500)
-        expect(err.message).to.eql('Internal Server Error')
-        mockedRequest.done()
-      })
+    let err
+    try {
+      await amplitude.track(data)
+    } catch (e) {
+      err = e
+    }
+    expect(err.status).to.eql(500)
+    expect(err.message).to.eql('Internal Server Error')
+    mockedRequest.done()
   })
 
   it('can accept an array of event objects', () => {
@@ -136,8 +135,6 @@ describe('track', () => {
     return amplitude.track([data]).then((res) => {
       expect(res).to.eql({ some: 'data' })
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 })

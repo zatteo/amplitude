@@ -1,5 +1,5 @@
 const nock = require('nock')
-const Amplitude = require('../src/amplitude')
+const Amplitude = require('../dist/amplitude')
 
 function generateMockedRequest (identity, status) {
   const mockedRequest = nock('https://api.amplitude.com')
@@ -109,6 +109,7 @@ describe('identify', function () {
 
     return this.amplitude.identify(this.data)
       .then((res) => {
+        expect(res).not.to.exist
         throw new Error('should not resolve')
       }).catch((err) => {
         expect(err.status).to.eql(500)

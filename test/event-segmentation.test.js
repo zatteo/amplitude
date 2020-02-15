@@ -1,4 +1,4 @@
-const Amplitude = require('../src/amplitude')
+const Amplitude = require('src/amplitude')
 const nock = require('nock')
 
 function generateMockedRequest (query, response, status) {
@@ -80,6 +80,7 @@ describe('eventSegmentation', function () {
     const mockedRequest = generateMockedRequest(this.data, null, 400)
 
     return this.amplitude.eventSegmentation(this.data).then((res) => {
+      expect(res).not.to.exist
       throw new Error('Should not have resolved')
     }).catch((err) => {
       expect(err.status).to.eql(400)

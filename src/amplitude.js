@@ -1,10 +1,9 @@
-import './types'
-import request = require('superagent')
+const request = require('superagent')
 
 const AMPLITUDE_TOKEN_ENDPOINT = 'https://api.amplitude.com'
 const AMPLITUDE_DASHBOARD_ENDPOINT = 'https://amplitude.com/api/2'
 
-const camelCaseToSnakeCasePropertyMap: AmplitudeQueryParams = {
+const camelCaseToSnakeCasePropertyMap = {
   userId: 'user_id',
   deviceId: 'device_id',
   sessionId: 'session_id',
@@ -21,26 +20,55 @@ const camelCaseToSnakeCasePropertyMap: AmplitudeQueryParams = {
   locationLng: 'location_lng'
 }
 
-function postBody (url: string, params: AmplitudeQueryParams) {
+class AmplitudeError extends Error {
+  constructor(res) {
+    super(res.text);
+    this.statusCode = res.status
+    this.body = res.body
+    // if (typeof this.body === 'object') {
+    //   this.body = JSON.stringify(this.body, null, 2)
+    // }
+  }
+}
+
+function safeEncodeURIComponent (val) {
+  let stringVal
+  if (typeof val === 'string') {
+    stringVal = val
+  } else if (typeof val === 'object') {
+    stringVal = JSON.stringify(val)
+  } else if (typeof val === 'undefined') {
+    stringVal = ''
+  } else {
+    stringVal = String(val)
+  }
+
+  return encodeURIComponent(stringVal)
+}
+
+async function postBody (url, params) {
   const encodedParams = Object.keys(params).map(key => {
-    return encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
+    return encodeURIComponent(key) + '=' + safeEncodeURIComponent(params[key])
   }).join('&')
 
-  return request.post(url)
-    .send(encodedParams)
-    .type('application/x-www-form-urlencoded')
-    .set('Accept', 'application/json')
-    .then(res => res.body)
+  try {
+    const res = await request.post(url)
+      .send(encodedParams)
+      .type('application/x-www-form-urlencoded')
+      .set('Accept', 'application/json')
+
+    return res.body
+  } catch (e) {
+    if (e.response) {
+      throw new AmplitudeError(e.response)
+    }
+
+    throw e
+  }
 }
 
 class Amplitude {
-  private readonly token: string;
-  private readonly secretKey: string | undefined;
-  private readonly userId: string;
-  private readonly deviceId: string;
-  private readonly sessionId: any;
-
-  constructor (token: string, options: AmplitudeOptions) {
+  constructor (token, options) {
     if (!token) {
       throw new Error('No token provided')
     }
@@ -54,32 +82,41 @@ class Amplitude {
     this.sessionId = options.sessionId || options.session_id
   }
 
-  private _generateRequestData (data: AmplitudeRequestData | [AmplitudeRequestData]) {
-    const passedDataIsArray = Array.isArray(data)
-    const arrayedData = passedDataIsArray ? data : [data]
-
-    const transformedDataArray = arrayedData.map((item: AmplitudeRequestData) => {
-      const transformedData = Object.keys(item).reduce((obj: AmplitudeRequestData, key: string) => {
+  _generateRequestData(data) {
+    let returnZero = false
+    if (!Array.isArray(data)) {
+      returnZero = true
+      data = [data]
+    }
+    const transformedDataArray = data.map((item) => {
+      const _item = Object.create(item)
+      /* eslint-disable @typescript-eslint/camelcase */
+      const transformedData = Object.keys(_item).reduce((obj, key) => {
         const transformedKey = camelCaseToSnakeCasePropertyMap[key] || key
 
-        obj[transformedKey] = item[key]
+        // @TODO: Not sure why I need to force it a string
+        obj[String(transformedKey)] = _item[key]
 
         return obj
-      }, {})
+      }, {
+        user_id: this.userId,
+        device_id: this.deviceId,
+        session_id: this.sessionId,
+        event_type: item.event_type
+      })
 
-      transformedData.user_id = transformedData.user_id || this.userId
-      transformedData.device_id = transformedData.device_id || this.deviceId
-      transformedData.session_id = transformedData.session_id || this.sessionId
+      /* eslint-enable @typescript-eslint/camelcase */
 
-      return transformedData
+      return transformedData as AmplitudeRequestData
     })
 
-    return passedDataIsArray ? transformedDataArray : transformedDataArray[0]
+    return returnZero ? transformedDataArray[0] : transformedDataArray
   }
 
-  identify (data: AmplitudeRequestData | [AmplitudeRequestData]) {
+  identify (data) {
     const transformedData = this._generateRequestData(data)
     const params = {
+      // eslint-disable-next-line @typescript-eslint/camelcase
       api_key: this.token,
       identification: JSON.stringify(transformedData)
     }
@@ -87,9 +124,10 @@ class Amplitude {
     return postBody(AMPLITUDE_TOKEN_ENDPOINT + '/identify', params)
   }
 
-  track (data: AmplitudeRequestData | [AmplitudeRequestData]) {
+  track (data) {
     const transformedData = this._generateRequestData(data)
     const params = {
+      // eslint-disable-next-line @typescript-eslint/camelcase
       api_key: this.token,
       event: JSON.stringify(transformedData)
     }
@@ -97,7 +135,7 @@ class Amplitude {
     return postBody(AMPLITUDE_TOKEN_ENDPOINT + '/httpapi', params)
   }
 
-  export (options: AmplitudeExportOptions) {
+  export (options) {
     if (!this.secretKey) {
       throw new Error('secretKey must be set to use the export method')
     }
@@ -114,7 +152,7 @@ class Amplitude {
       })
   }
 
-  userSearch (userSearchId: string) {
+  userSearch (userSearchId) {
     if (!this.secretKey) {
       throw new Error('secretKey must be set to use the userSearch method')
     }
@@ -132,7 +170,7 @@ class Amplitude {
       .then(res => res.body)
   }
 
-  userActivity (amplitudeId: string | number, data?: AmplitudeUserActivityOptions) {
+  userActivity (amplitudeId, data) {
     if (!data) {
       data = {
         user: amplitudeId
@@ -156,7 +194,7 @@ class Amplitude {
       .then(res => res.body)
   }
 
-  eventSegmentation (data: AmplitudeSegmentationOptions) {
+  eventSegmentation (data) {
     if (!this.secretKey) {
       throw new Error('secretKey must be set to use the eventSegmentation method')
     }
@@ -177,4 +215,5 @@ class Amplitude {
   }
 }
 
-export = Amplitude
+module.exports = Amplitude
+module.exports.default = module.exports

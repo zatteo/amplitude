@@ -6,6 +6,9 @@
   "files": [
     "dist/**/*"
   ],
+  "engines": {
+    "node": ">=8.10.0"
+  },
   "contributors": [
     {
       "name": "Erki Esken",
@@ -32,15 +35,16 @@
     }
   ],
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "build": "rm -rf ./dist && tsc",
+    "build:release": "npm run lint && rm -rf ./dist && tsc",
     "contributors": "node tasks/generate-contributors-list",
     "coverage": "codecov",
-    "lint": "tsc --noEmit && eslint '**/*.{js,ts}'",
+    "lint": "tsc -p ./tsconfig.test.json && eslint '**/*.{js,ts}'",
     "test": "npm run lint && nyc --reporter=lcov --reporter=text mocha",
     "tdd": "mocha --watch"
   },
-  "main": "dist/amplitude.js",
-  "types": "dist/amplitude.d.ts",
+  "main": "./index.js",
+  "types": "types",
   "repository": {
     "type": "git",
     "url": "https://github.com/geoffdutton/amplitude"
@@ -69,14 +73,12 @@
     "codecov": "^3.6.5",
     "ecmascript-version-detector": "^1.0.3",
     "eslint": "^6.8.0",
-    "eslint-config-standard": "^14.1.0",
     "glob": "^7.1.6",
     "mocha": "^7.0.1",
     "nock": "^11.8.2",
     "nyc": "^15.0.0",
     "sinon": "^8.1.1",
     "sinon-chai": "^3.4.0",
-    "standard": "^14.3.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5"
   },

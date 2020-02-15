@@ -1,4 +1,4 @@
-const Amplitude = require('../src/amplitude')
+const Amplitude = require('src/amplitude')
 const nock = require('nock')
 
 function generateMockedRequest (query, status) {
@@ -65,6 +65,7 @@ describe('export', function () {
     const mockedRequest = generateMockedRequest(this.options, 403)
 
     return this.amplitude.export(this.options).then((res) => {
+      expect(res).not.to.exist
       throw new Error('Should not have resolved')
     }).catch((err) => {
       expect(err.status).to.eql(403)

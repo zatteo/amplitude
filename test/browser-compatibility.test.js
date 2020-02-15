@@ -23,7 +23,7 @@ describe('ES5 Compatibility', function () {
         const errors = []
 
         parseEcmascriptVersion(data).forEach((expression) => {
-          if (expression.selector === "//Program[@sourceType=='module']") {
+          if (expression.selector === '//Program[@sourceType==\'module\']') {
             return
           }
 
