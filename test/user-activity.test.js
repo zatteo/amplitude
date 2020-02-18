@@ -1,5 +1,5 @@
 const nock = require('nock')
-const Amplitude = require('../dist/amplitude')
+const Amplitude = require('../src')
 
 function generateMockedRequest (userSearchId, matches, status) {
   let query = { user: userSearchId }

@@ -6,8 +6,8 @@ const apiKey = process.env.AMPLITUDE_API_KEY || '';
 
 (async function (): Promise<void> {
   try {
-    const amp = new Amplitude(apiKey, {});
-    const res = await amp.track({
+    const amp: Amplitude = new Amplitude(apiKey);
+    const res: AmplitudeResponseBody = await amp.track({
       user_id: 'blah',
       event_type: 'Amplitude Example'
     })

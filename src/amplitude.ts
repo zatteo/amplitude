@@ -1,37 +1,21 @@
-const request = require('superagent')
-
-const AMPLITUDE_TOKEN_ENDPOINT = 'https://api.amplitude.com'
-const AMPLITUDE_DASHBOARD_ENDPOINT = 'https://amplitude.com/api/2'
-
-const camelCaseToSnakeCasePropertyMap = {
-  userId: 'user_id',
-  deviceId: 'device_id',
-  sessionId: 'session_id',
-  eventType: 'event_type',
-  eventProperties: 'event_properties',
-  userProperties: 'user_properties',
-  appVersion: 'app_version',
-  osName: 'os_name',
-  deviceBrand: 'device_brand',
-  deviceManufacturer: 'device_manufacturer',
-  deviceModel: 'device_model',
-  deviceType: 'device_type',
-  locationLat: 'location_lat',
-  locationLng: 'location_lng'
-}
+import * as request from 'superagent'
+import './interfaces'
 
 class AmplitudeError extends Error {
-  constructor(res) {
+  readonly statusCode: number;
+  readonly body: string;
+
+  constructor(res: request.Response) {
     super(res.text);
     this.statusCode = res.status
     this.body = res.body
-    // if (typeof this.body === 'object') {
-    //   this.body = JSON.stringify(this.body, null, 2)
-    // }
+    if (typeof this.body === 'object') {
+      this.body = JSON.stringify(this.body, null, 2)
+    }
   }
 }
 
-function safeEncodeURIComponent (val) {
+function safeEncodeURIComponent (val: AnythingBasically): string {
   let stringVal
   if (typeof val === 'string') {
     stringVal = val
@@ -46,7 +30,7 @@ function safeEncodeURIComponent (val) {
   return encodeURIComponent(stringVal)
 }
 
-async function postBody (url, params) {
+async function postBody (url: string, params: AmplitudeQueryParams): Promise<AmplitudeResponseBody> {
   const encodedParams = Object.keys(params).map(key => {
     return encodeURIComponent(key) + '=' + safeEncodeURIComponent(params[key])
   }).join('&')
@@ -67,8 +51,34 @@ async function postBody (url, params) {
   }
 }
 
-class Amplitude {
-  constructor (token, options) {
+const AMPLITUDE_TOKEN_ENDPOINT = 'https://api.amplitude.com'
+const AMPLITUDE_DASHBOARD_ENDPOINT = 'https://amplitude.com/api/2'
+
+const camelCaseToSnakeCasePropertyMap: StringMap = {
+  userId: 'user_id',
+  deviceId: 'device_id',
+  sessionId: 'session_id',
+  eventType: 'event_type',
+  eventProperties: 'event_properties',
+  userProperties: 'user_properties',
+  appVersion: 'app_version',
+  osName: 'os_name',
+  deviceBrand: 'device_brand',
+  deviceManufacturer: 'device_manufacturer',
+  deviceModel: 'device_model',
+  deviceType: 'device_type',
+  locationLat: 'location_lat',
+  locationLng: 'location_lng'
+}
+
+export default class Amplitude {
+  private readonly token: string;
+  private readonly secretKey?: string;
+  private readonly userId?: string;
+  private readonly deviceId?: string;
+  private readonly sessionId?: string;
+
+  constructor (token: string, options?: AmplitudeOptions) {
     if (!token) {
       throw new Error('No token provided')
     }
@@ -82,38 +92,37 @@ class Amplitude {
     this.sessionId = options.sessionId || options.session_id
   }
 
-  _generateRequestData(data) {
-    let returnZero = false
+  private _generateRequestData (data: AmplitudeRequestData | Array<AmplitudeRequestData>): AmplitudePostRequestData | Array<AmplitudePostRequestData> {
     if (!Array.isArray(data)) {
-      returnZero = true
       data = [data]
     }
-    const transformedDataArray = data.map((item) => {
-      const _item = Object.create(item)
+
+    const result = data.map((item: AmplitudeRequestData) => {
       /* eslint-disable @typescript-eslint/camelcase */
-      const transformedData = Object.keys(_item).reduce((obj, key) => {
+      return Object.keys(item).reduce((obj: AmplitudeQueryParams, key: string) => {
         const transformedKey = camelCaseToSnakeCasePropertyMap[key] || key
 
-        // @TODO: Not sure why I need to force it a string
-        obj[String(transformedKey)] = _item[key]
+        obj[transformedKey] = item[key]
 
         return obj
       }, {
-        user_id: this.userId,
-        device_id: this.deviceId,
-        session_id: this.sessionId,
-        event_type: item.event_type
+        event_type: item.event_type || item.eventType,
+        device_id: item.device_id || this.deviceId,
+        session_id: item.session_id || this.sessionId,
+        user_id: item.user_id || this.userId
       })
 
       /* eslint-enable @typescript-eslint/camelcase */
+    }) as [AmplitudePostRequestData]
 
-      return transformedData as AmplitudeRequestData
-    })
+    if (result.length === 1) {
+      return result[0]
+    }
 
-    return returnZero ? transformedDataArray[0] : transformedDataArray
+    return result
   }
 
-  identify (data) {
+  identify (data: AmplitudeRequestData | [AmplitudeRequestData]): Promise<AmplitudeResponseBody> {
     const transformedData = this._generateRequestData(data)
     const params = {
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -124,7 +133,7 @@ class Amplitude {
     return postBody(AMPLITUDE_TOKEN_ENDPOINT + '/identify', params)
   }
 
-  track (data) {
+  track (data: AmplitudeRequestData | Array<AmplitudeRequestData>): Promise<AmplitudeResponseBody> {
     const transformedData = this._generateRequestData(data)
     const params = {
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -135,7 +144,7 @@ class Amplitude {
     return postBody(AMPLITUDE_TOKEN_ENDPOINT + '/httpapi', params)
   }
 
-  export (options) {
+  export (options: AmplitudeExportOptions): request.SuperAgentRequest {
     if (!this.secretKey) {
       throw new Error('secretKey must be set to use the export method')
     }
@@ -152,7 +161,7 @@ class Amplitude {
       })
   }
 
-  userSearch (userSearchId) {
+  userSearch (userSearchId: string): Promise<AmplitudeResponseBody> {
     if (!this.secretKey) {
       throw new Error('secretKey must be set to use the userSearch method')
     }
@@ -170,7 +179,7 @@ class Amplitude {
       .then(res => res.body)
   }
 
-  userActivity (amplitudeId, data) {
+  userActivity (amplitudeId: string | number, data?: AmplitudeUserActivityOptions): Promise<AmplitudeResponseBody> {
     if (!data) {
       data = {
         user: amplitudeId
@@ -194,7 +203,7 @@ class Amplitude {
       .then(res => res.body)
   }
 
-  eventSegmentation (data) {
+  eventSegmentation (data: AmplitudeSegmentationOptions): Promise<AmplitudeResponseBody> {
     if (!this.secretKey) {
       throw new Error('secretKey must be set to use the eventSegmentation method')
     }
@@ -214,6 +223,3 @@ class Amplitude {
       .then(res => res.body)
   }
 }
-
-module.exports = Amplitude
-module.exports.default = module.exports

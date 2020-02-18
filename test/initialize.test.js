@@ -1,4 +1,4 @@
-const Amplitude = require('src/amplitude')
+const Amplitude = require('../src')
 
 describe('initialization', () => {
   it('throws an error if no api token is passed', () => {

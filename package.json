@@ -3,8 +3,10 @@
   "version": "4.0.1",
   "description": "A node wrapper for Amplitude analytics http api",
   "author": "Blade Barringer <blade@crookedneighbor.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "dist/**/*"
+    "dist"
   ],
   "engines": {
     "node": ">=8.10.0"
@@ -35,16 +37,13 @@
     }
   ],
   "scripts": {
-    "build": "rm -rf ./dist && tsc",
-    "build:release": "npm run lint && rm -rf ./dist && tsc",
+    "build": "rm -rf dist && tsc",
     "contributors": "node tasks/generate-contributors-list",
     "coverage": "codecov",
-    "lint": "tsc -p ./tsconfig.test.json && eslint '**/*.{js,ts}'",
+    "lint": "tsc --noEmit && eslint '**/*.{js,ts}'",
     "test": "npm run lint && nyc --reporter=lcov --reporter=text mocha",
     "tdd": "mocha --watch"
   },
-  "main": "./index.js",
-  "types": "types",
   "repository": {
     "type": "git",
     "url": "https://github.com/geoffdutton/amplitude"

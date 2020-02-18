@@ -1,6 +1,6 @@
 const nock = require('nock')
 const sinon = require('sinon')
-const Amplitude = require('src/amplitude')
+const Amplitude = require('../src')
 
 function generateMockedRequest (userSearchId, matches, status) {
   return nock('https://amplitude.com')

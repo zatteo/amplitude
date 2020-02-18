@@ -2,16 +2,17 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "module": "es6",
-    "moduleResolution": "node",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "declaration": true,
-    "esModuleInterop": false,
+    "declarationMap": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
     "target": "es6",
     "sourceMap": true
   },
-  "include": ["./src/**/*"],
+  "include": ["src"],
   "exclude": [
     "node_modules"
   ]
