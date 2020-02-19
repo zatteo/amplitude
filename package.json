@@ -41,7 +41,7 @@
     "contributors": "node tasks/generate-contributors-list",
     "coverage": "codecov",
     "lint": "eslint --ext .js,.ts .",
-    "prerelease": "npm version prerelease --preid=next",
+    "prerelease": "npm version prerelease --preid=next && npm publish --tag next",
     "prepare": "npm run build",
     "prepublishOnly": "npm run test",
     "test": "npm run lint && npm run build && nyc --reporter=lcov --reporter=text mocha",
