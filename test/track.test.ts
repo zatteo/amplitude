@@ -1,8 +1,11 @@
 import { expect } from 'chai'
 import nock from 'nock'
-import Amplitude from '../src';
+import Amplitude from '../dist'
 
 function generateMockedRequest (event: AmplitudeQueryParams | Array<AmplitudeQueryParams>, status: number): nock.Scope {
+  if (!Array.isArray(event)) {
+    event = [event]
+  }
   return nock('https://api.amplitude.com')
     .post('/httpapi', reqBody => {
       if (reqBody.api_key !== 'token') {
@@ -31,7 +34,7 @@ describe('track', () => {
     })
 
     data = {
-      event_type: 'event',
+      event_type: 'event'
     }
 
     mockRequestData = {

@@ -8,12 +8,13 @@ module.exports = {
     es6: true
   },
   rules: {
-    semi: "off",
-    quotes: ['error', 'single']
+    semi: ['error', 'never'],
+    quotes: ['error', 'single'],
+    'comma-dangle': 'error'
   },
   overrides: [
     {
-      files: ["**/*.ts"],
+      files: ['**/*.ts'],
       extends: [
         'eslint:recommended',
         'plugin:@typescript-eslint/eslint-recommended',

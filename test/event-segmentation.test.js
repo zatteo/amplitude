@@ -1,4 +1,4 @@
-const Amplitude = require('../src')
+const Amplitude = require('../dist')
 const nock = require('nock')
 
 function generateMockedRequest (query, response, status) {

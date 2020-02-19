@@ -40,8 +40,8 @@
     "build": "rm -rf dist && tsc",
     "contributors": "node tasks/generate-contributors-list",
     "coverage": "codecov",
-    "lint": "tsc --noEmit && eslint '**/*.{js,ts}'",
-    "test": "npm run lint && nyc --reporter=lcov --reporter=text mocha",
+    "lint": "eslint --ext .js,.ts .",
+    "test": "npm run lint && npm run build && nyc --reporter=lcov --reporter=text mocha",
     "tdd": "mocha --watch"
   },
   "repository": {

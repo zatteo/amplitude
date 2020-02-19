@@ -1,12 +1,14 @@
 import * as request from 'superagent'
 import './interfaces'
 
+type StringMap = { [key: string]: string }
+
 class AmplitudeError extends Error {
   readonly statusCode: number;
   readonly body: string;
 
   constructor(res: request.Response) {
-    super(res.text);
+    super(res.text)
     this.statusCode = res.status
     this.body = res.body
     if (typeof this.body === 'object') {
@@ -15,24 +17,9 @@ class AmplitudeError extends Error {
   }
 }
 
-function safeEncodeURIComponent (val: AnythingBasically): string {
-  let stringVal
-  if (typeof val === 'string') {
-    stringVal = val
-  } else if (typeof val === 'object') {
-    stringVal = JSON.stringify(val)
-  } else if (typeof val === 'undefined') {
-    stringVal = ''
-  } else {
-    stringVal = String(val)
-  }
-
-  return encodeURIComponent(stringVal)
-}
-
-async function postBody (url: string, params: AmplitudeQueryParams): Promise<AmplitudeResponseBody> {
+async function postBody (url: string, params: StringMap): Promise<AmplitudeResponseBody> {
   const encodedParams = Object.keys(params).map(key => {
-    return encodeURIComponent(key) + '=' + safeEncodeURIComponent(params[key])
+    return encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
   }).join('&')
 
   try {
@@ -92,12 +79,12 @@ export default class Amplitude {
     this.sessionId = options.sessionId || options.session_id
   }
 
-  private _generateRequestData (data: AmplitudeRequestData | Array<AmplitudeRequestData>): AmplitudePostRequestData | Array<AmplitudePostRequestData> {
+  private _generateRequestData (data: AmplitudeRequestData | Array<AmplitudeRequestData>): Array<AmplitudePostRequestData> {
     if (!Array.isArray(data)) {
       data = [data]
     }
 
-    const result = data.map((item: AmplitudeRequestData) => {
+    return data.map((item: AmplitudeRequestData) => {
       /* eslint-disable @typescript-eslint/camelcase */
       return Object.keys(item).reduce((obj: AmplitudeQueryParams, key: string) => {
         const transformedKey = camelCaseToSnakeCasePropertyMap[key] || key
@@ -114,12 +101,6 @@ export default class Amplitude {
 
       /* eslint-enable @typescript-eslint/camelcase */
     }) as [AmplitudePostRequestData]
-
-    if (result.length === 1) {
-      return result[0]
-    }
-
-    return result
   }
 
   identify (data: AmplitudeRequestData | [AmplitudeRequestData]): Promise<AmplitudeResponseBody> {

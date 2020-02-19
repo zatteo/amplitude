@@ -1,3 +1,4 @@
-import Amplitude from './amplitude';
+import './types'
+import Amplitude from './amplitude'
 
 export = Amplitude
