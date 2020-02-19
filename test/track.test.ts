@@ -129,7 +129,7 @@ describe('track', () => {
     })
   })
 
-  it('rejects when the request fails', async () => {
+  it('rejects with an AmplitudeError when the request fails', async () => {
     const mockedRequest = generateMockedRequest(mockRequestData, 500)
     let err
     try {
@@ -138,7 +138,7 @@ describe('track', () => {
       err = e
     }
 
-    expect(err.statusCode).to.eq(500)
+    expect(err.response.status).to.eq(500)
     // expect(err.message).to.eq('Internal Server Error')
     mockedRequest.done()
   })

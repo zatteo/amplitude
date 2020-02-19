@@ -3,39 +3,17 @@ import './interfaces'
 
 type StringMap = { [key: string]: string }
 
-class AmplitudeError extends Error {
-  readonly statusCode: number;
-  readonly body: string;
-
-  constructor(res: request.Response) {
-    super(res.text)
-    this.statusCode = res.status
-    this.body = res.body
-    if (typeof this.body === 'object') {
-      this.body = JSON.stringify(this.body, null, 2)
-    }
-  }
-}
-
 async function postBody (url: string, params: StringMap): Promise<AmplitudeResponseBody> {
   const encodedParams = Object.keys(params).map(key => {
     return encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
   }).join('&')
 
-  try {
-    const res = await request.post(url)
-      .send(encodedParams)
-      .type('application/x-www-form-urlencoded')
-      .set('Accept', 'application/json')
+  const res = await request.post(url)
+    .send(encodedParams)
+    .type('application/x-www-form-urlencoded')
+    .set('Accept', 'application/json')
 
-    return res.body
-  } catch (e) {
-    if (e.response) {
-      throw new AmplitudeError(e.response)
-    }
-
-    throw e
-  }
+  return res.body
 }
 
 const AMPLITUDE_TOKEN_ENDPOINT = 'https://api.amplitude.com'

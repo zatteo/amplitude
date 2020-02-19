@@ -112,7 +112,7 @@ describe('identify', function () {
         expect(res).not.to.exist
         throw new Error('should not resolve')
       }).catch((err) => {
-        expect(err.statusCode).to.eql(500)
+        expect(err.response.status).to.eql(500)
         // expect(err.message).to.eql('Internal Server Error')
         mockedRequest.done()
       })

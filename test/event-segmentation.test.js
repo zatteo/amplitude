@@ -2,6 +2,7 @@ const Amplitude = require('../dist')
 const nock = require('nock')
 
 function generateMockedRequest (query, response, status) {
+  query = Object.assign({}, query)
   query.e = JSON.stringify(query.e)
 
   return nock('https://amplitude.com')
@@ -40,31 +41,31 @@ describe('eventSegmentation', function () {
   it('throws an error if secret key is missing', function () {
     delete this.amplitude.secretKey
 
-    expect(() => {
+    expect(() =>
       this.amplitude.eventSegmentation(this.data)
-    }).to.throw('secretKey must be set to use the eventSegmentation method')
+    ).to.throw('secretKey must be set to use the eventSegmentation method')
   })
 
   it('throws an error if no data is passed in', function () {
-    expect(() => {
+    expect(() =>
       this.amplitude.eventSegmentation()
-    }).to.throw('`e`, `start` and `end` are required data properties')
+    ).to.throw('`e`, `start` and `end` are required data properties')
   })
 
   it('throws an error if e param is missing', function () {
     delete this.data.e
 
-    expect(() => {
+    expect(() =>
       this.amplitude.eventSegmentation(this.data)
-    }).to.throw('`e`, `start` and `end` are required data properties')
+    ).to.throw('`e`, `start` and `end` are required data properties')
   })
 
   it('throws an error if start param is missing', function () {
     delete this.data.start
 
-    expect(() => {
+    expect(() =>
       this.amplitude.eventSegmentation(this.data)
-    }).to.throw('`e`, `start` and `end` are required data properties')
+    ).to.throw('`e`, `start` and `end` are required data properties')
   })
 
   it('throws an error if end param is missing', function () {
@@ -94,8 +95,16 @@ describe('eventSegmentation', function () {
     return this.amplitude.eventSegmentation(this.data).then((res) => {
       expect(res).to.eql(this.response)
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
+    })
+  })
+
+  it('handles a string version of `e`', function () {
+    const mockedRequest = generateMockedRequest(this.data, this.response, 200)
+
+    this.data.e = JSON.stringify(this.data.e)
+    return this.amplitude.eventSegmentation(this.data).then((res) => {
+      expect(res).to.eql(this.response)
+      mockedRequest.done()
     })
   })
 })
