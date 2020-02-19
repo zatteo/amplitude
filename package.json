@@ -41,6 +41,8 @@
     "contributors": "node tasks/generate-contributors-list",
     "coverage": "codecov",
     "lint": "eslint --ext .js,.ts .",
+    "prepare" : "npm run build",
+    "prepublishOnly": "npm run test",
     "test": "npm run lint && npm run build && nyc --reporter=lcov --reporter=text mocha",
     "tdd": "mocha --watch"
   },
