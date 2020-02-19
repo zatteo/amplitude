@@ -1,6 +1,6 @@
 # Amplitude Change Log
 
-## v5.0.1-next.0
+## v5.0.1-next
 - Convert to typescript (this shouldn't break anything as it's being exported just like before)
 
 ## v4.0.1
