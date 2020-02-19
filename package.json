@@ -41,7 +41,7 @@
     "contributors": "node tasks/generate-contributors-list",
     "coverage": "codecov",
     "lint": "eslint --ext .js,.ts .",
-    "prepare" : "npm run build",
+    "prepare": "npm run build",
     "prepublishOnly": "npm run test",
     "test": "npm run lint && npm run build && nyc --reporter=lcov --reporter=text mocha",
     "tdd": "mocha --watch"
@@ -58,6 +58,7 @@
     "amplitude"
   ],
   "dependencies": {
+    "@types/superagent": "^4.1.7",
     "superagent": "^5.2.1"
   },
   "devDependencies": {
@@ -67,7 +68,6 @@
     "@types/node": "^13.7.1",
     "@types/sinon": "^7.5.1",
     "@types/sinon-chai": "^3.2.3",
-    "@types/superagent": "^4.1.6",
     "@typescript-eslint/eslint-plugin": "^2.19.2",
     "@typescript-eslint/parser": "^2.19.2",
     "chai": "^4.2.0",
