@@ -13,7 +13,8 @@ module.exports = {
   rules: {
     semi: ['error', 'never'],
     quotes: ['error', 'single'],
-    'comma-dangle': 'error'
+    'comma-dangle': 'error',
+    'object-curly-spacing': ['error', 'always']
   },
   overrides: [
     {

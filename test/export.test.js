@@ -57,7 +57,7 @@ describe('export', () => {
 
   it('throws an error if end param is missing', async () => {
     delete options.end
-    
+
     let err
     try {
       await amplitude.export(options)

@@ -1,4 +1,4 @@
-import axios, {AxiosResponse} from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { AvailableCamelCaseToSnakeCasePropertyMap, StringMap } from './types'
 import {
   AmplitudeOptions,
@@ -10,7 +10,7 @@ import {
   AmplitudeSegmentationOptions
 } from './public'
 import { AmplitudePostRequestData } from './interfaces'
-import { AmplitudeErrorResponse, axiosErrorCatcher} from './errors'
+import { AmplitudeErrorResponse, axiosErrorCatcher } from './errors'
 
 const AMPLITUDE_TOKEN_ENDPOINT = 'https://api.amplitude.com'
 const AMPLITUDE_DASHBOARD_ENDPOINT = 'https://amplitude.com/api/2'

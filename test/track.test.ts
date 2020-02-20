@@ -54,7 +54,7 @@ describe('track', () => {
       user_id: 'different_user_id',
       device_id: 'different_device_id',
       event_properties: { foo: 'bar' },
-      user_properties: { fiz: 'biz'},
+      user_properties: { fiz: 'biz' },
       app_version: 'baz',
       os_name: 'biz',
       device_brand: 'buz',

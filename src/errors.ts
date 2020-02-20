@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios'
-import {AmplitudeResponseBody} from './public'
+import { AmplitudeResponseBody } from './public'
 
 export class AmplitudeErrorResponse extends Error {
   readonly status: number;
