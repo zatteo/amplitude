@@ -141,6 +141,9 @@ describe('track', () => {
     }
 
     expect(err.status).to.eq(500)
+    expect(err.data).to.eql({
+      some: 'data'
+    })
     // expect(err.message).to.eq('Internal Server Error')
     mockedRequest.done()
   })

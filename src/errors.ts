@@ -3,10 +3,12 @@ import { AmplitudeResponseBody } from './public'
 
 export class AmplitudeErrorResponse extends Error {
   readonly status: number
+  private data: object | string
 
   constructor(err: AxiosError) {
     super(err.message)
     this.status = err.response.status
+    this.data = err.response.data
   }
 }
 

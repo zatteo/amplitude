@@ -1,5 +1,6 @@
 require('dotenv').config()
-import Amplitude, { AmplitudeOptions } from 'amplitude'
+// @ts-ignore
+import Amplitude, { AmplitudeResponseBody } from 'amplitude'
 import processor from "./lib";
 
 const apiKey = process.env.AMPLITUDE_API_KEY || '';
@@ -10,7 +11,7 @@ const apiKey = process.env.AMPLITUDE_API_KEY || '';
       secretKey: 'balh'
     });
     const res: AmplitudeResponseBody = await amp.track({
-      user_id: 'blah',
+      user_id: 'test-user-id',
       event_type: 'Amplitude Example'
     })
     processor(res)
