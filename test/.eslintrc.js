@@ -7,7 +7,8 @@ module.exports = {
     expect: true
   },
   env: {
-    mocha: true
+    mocha: true,
+    es6: true
   },
   overrides: [
     {

@@ -1,5 +1,5 @@
 const nock = require('nock')
-const Amplitude = require('../src')
+const Amplitude = require('../src').default
 
 function generateMockedRequest (identity, status) {
   const mockedRequest = nock('https://api.amplitude.com')
@@ -41,8 +41,6 @@ describe('identify', function () {
     return this.amplitude.identify(this.data).then((res) => {
       expect(res).to.eql({ some: 'data' })
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 
@@ -70,8 +68,6 @@ describe('identify', function () {
     return this.amplitude.identify(this.data).then((res) => {
       expect(res).to.eql({ some: 'data' })
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 
@@ -99,8 +95,6 @@ describe('identify', function () {
     return this.amplitude.identify(this.data).then((res) => {
       expect(res).to.eql({ some: 'data' })
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 
@@ -112,7 +106,7 @@ describe('identify', function () {
         expect(res).not.to.exist
         throw new Error('should not resolve')
       }).catch((err) => {
-        expect(err.response.status).to.eql(500)
+        expect(err.status).to.eql(500)
         // expect(err.message).to.eql('Internal Server Error')
         mockedRequest.done()
       })
@@ -158,8 +152,6 @@ describe('identify', function () {
     return this.amplitude.identify(this.data).then((res) => {
       expect(res).to.eql({ some: 'data' })
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 })

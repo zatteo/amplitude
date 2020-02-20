@@ -1,6 +1,6 @@
 const nock = require('nock')
 const sinon = require('sinon')
-const Amplitude = require('../src')
+const Amplitude = require('../src').default
 
 function generateMockedRequest (userSearchId, matches, status) {
   return nock('https://amplitude.com')
@@ -85,13 +85,11 @@ describe('userSearch', function () {
 
     return this.amplitude.userSearch(search).then((res) => {
       expect(res.matches).to.be.a('array')
-      expect(res.matches.length).to.eql(1)
+      expect(res.matches.length).to.eq(1)
       expect(res.type).to.eql('match_amplitude_id')
       // eslint-disable-next-line no-unused-expressions
       expect(userActivityStub).to.not.be.called
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 
@@ -101,11 +99,9 @@ describe('userSearch', function () {
 
     return this.amplitude.userSearch(search).then((res) => {
       expect(res.matches).to.be.a('array')
-      expect(res.matches.length).to.eql(1)
+      expect(res.matches.length).to.eq(1)
       expect(res.type).to.eql('match_user_props')
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 
@@ -115,11 +111,9 @@ describe('userSearch', function () {
 
     return this.amplitude.userSearch(search).then((res) => {
       expect(res.matches).to.be.a('array')
-      expect(res.matches.length).to.eql(1)
+      expect(res.matches.length).to.eq(1)
       expect(res.type).to.eql('match_user_or_device_id')
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 
@@ -129,11 +123,9 @@ describe('userSearch', function () {
 
     return this.amplitude.userSearch(search).then((res) => {
       expect(res.matches).to.be.a('array')
-      expect(res.matches.length).to.eql(0)
+      expect(res.matches.length).to.eq(0)
       expect(res.type).to.eql('nomatch')
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 
@@ -145,8 +137,7 @@ describe('userSearch', function () {
       expect(res).not.to.exist
       throw new Error('Should not have resolved')
     }).catch((err) => {
-      expect(err.status).to.eql(403)
-      expect(err.message).to.eql('Forbidden')
+      expect(err.status).to.eq(403)
       mockedRequest.done()
     })
   })

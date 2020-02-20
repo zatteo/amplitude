@@ -1,25 +1,23 @@
-import * as request from 'superagent'
-import './interfaces'
-
-type StringMap = { [key: string]: string }
-
-async function postBody (url: string, params: StringMap): Promise<AmplitudeResponseBody> {
-  const encodedParams = Object.keys(params).map(key => {
-    return encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
-  }).join('&')
-
-  const res = await request.post(url)
-    .send(encodedParams)
-    .type('application/x-www-form-urlencoded')
-    .set('Accept', 'application/json')
-
-  return res.body
-}
+import axios, {AxiosResponse} from 'axios'
+import { AvailableCamelCaseToSnakeCasePropertyMap, StringMap } from './types'
+import {
+  AmplitudeOptions,
+  AmplitudeResponseBody,
+  AmplitudeRequestData,
+  AmplitudeUserActivityOptions,
+  AmplitudeExportOptions,
+  AmplitudeRequestDataOptions,
+  AmplitudeSegmentationOptions
+} from './public'
+import { AmplitudePostRequestData } from './interfaces'
+import { AmplitudeErrorResponse, axiosErrorCatcher} from './errors'
 
 const AMPLITUDE_TOKEN_ENDPOINT = 'https://api.amplitude.com'
 const AMPLITUDE_DASHBOARD_ENDPOINT = 'https://amplitude.com/api/2'
 
-const camelCaseToSnakeCasePropertyMap: StringMap = {
+const camelCaseToSnakeCasePropertyMap: {
+  [key: string]: AvailableCamelCaseToSnakeCasePropertyMap;
+} = {
   userId: 'user_id',
   deviceId: 'device_id',
   sessionId: 'session_id',
@@ -28,10 +26,10 @@ const camelCaseToSnakeCasePropertyMap: StringMap = {
   userProperties: 'user_properties',
   appVersion: 'app_version',
   osName: 'os_name',
+  osVersion: 'os_version',
   deviceBrand: 'device_brand',
   deviceManufacturer: 'device_manufacturer',
   deviceModel: 'device_model',
-  deviceType: 'device_type',
   locationLat: 'location_lat',
   locationLng: 'location_lng'
 }
@@ -43,12 +41,10 @@ export default class Amplitude {
   private readonly deviceId?: string;
   private readonly sessionId?: string;
 
-  constructor (token: string, options?: AmplitudeOptions) {
+  constructor(token: string, options: AmplitudeOptions = {}) {
     if (!token) {
       throw new Error('No token provided')
     }
-
-    options = options || {}
 
     this.token = token
     this.secretKey = options.secretKey
@@ -57,70 +53,111 @@ export default class Amplitude {
     this.sessionId = options.sessionId || options.session_id
   }
 
-  private _generateRequestData (data: AmplitudeRequestData | Array<AmplitudeRequestData>): Array<AmplitudePostRequestData> {
+  private _generateRequestData(
+    data: AmplitudeRequestData | Array<AmplitudeRequestData>
+  ): Array<AmplitudePostRequestData> {
     if (!Array.isArray(data)) {
       data = [data]
     }
 
     return data.map((item: AmplitudeRequestData) => {
       /* eslint-disable @typescript-eslint/camelcase */
-      return Object.keys(item).reduce((obj: AmplitudeQueryParams, key: string) => {
-        const transformedKey = camelCaseToSnakeCasePropertyMap[key] || key
+      return Object.keys(item).reduce(
+        (obj: AmplitudeRequestData, key: string) => {
+          const transformedKey = camelCaseToSnakeCasePropertyMap[key] || key
 
-        obj[transformedKey] = item[key]
+          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // @ts-ignore
+          obj[transformedKey] = item[key]
 
-        return obj
-      }, {
-        event_type: item.event_type || item.eventType,
-        device_id: item.device_id || this.deviceId,
-        session_id: item.session_id || this.sessionId,
-        user_id: item.user_id || this.userId
-      })
+          return obj
+        },
+        {
+          event_type: item.event_type || item.eventType,
+          device_id: item.device_id || this.deviceId,
+          session_id: item.session_id || this.sessionId,
+          user_id: item.user_id || this.userId
+        } as AmplitudeRequestData
+      )
 
       /* eslint-enable @typescript-eslint/camelcase */
     }) as [AmplitudePostRequestData]
   }
 
-  identify (data: AmplitudeRequestData | [AmplitudeRequestData]): Promise<AmplitudeResponseBody> {
+  identify(
+    data: AmplitudeRequestData | [AmplitudeRequestData]
+  ): Promise<AmplitudeResponseBody> {
     const transformedData = this._generateRequestData(data)
-    const params = {
+    const params: StringMap = {
       // eslint-disable-next-line @typescript-eslint/camelcase
       api_key: this.token,
       identification: JSON.stringify(transformedData)
     }
 
-    return postBody(AMPLITUDE_TOKEN_ENDPOINT + '/identify', params)
+    const encodedParams = Object.keys(params)
+      .map(key => {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
+      })
+      .join('&')
+
+    return axiosErrorCatcher(axios.post(`${AMPLITUDE_TOKEN_ENDPOINT}/identify`, encodedParams, {
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded'
+      }
+    })
+      .then(res => res.data))
   }
 
-  track (data: AmplitudeRequestData | Array<AmplitudeRequestData>): Promise<AmplitudeResponseBody> {
+  track(
+    data: AmplitudeRequestData | Array<AmplitudeRequestData>,
+    options?: AmplitudeRequestDataOptions
+  ): Promise<AmplitudeResponseBody> {
     const transformedData = this._generateRequestData(data)
     const params = {
       // eslint-disable-next-line @typescript-eslint/camelcase
       api_key: this.token,
-      event: JSON.stringify(transformedData)
+      events: transformedData,
+      options
     }
 
-    return postBody(AMPLITUDE_TOKEN_ENDPOINT + '/httpapi', params)
+    return axiosErrorCatcher(axios
+      .post(`${AMPLITUDE_TOKEN_ENDPOINT}/2/httpapi`, params)
+      .then(res => res.data))
   }
 
-  export (options: AmplitudeExportOptions): request.SuperAgentRequest {
-    if (!this.secretKey) {
-      throw new Error('secretKey must be set to use the export method')
-    }
+  async export(options: AmplitudeExportOptions): Promise<AxiosResponse> {
+    try {
+      if (!this.secretKey) {
+        throw new Error('secretKey must be set to use the export method')
+      }
 
-    if (!options.start || !options.end) {
-      throw new Error('`start` and `end` are required options')
-    }
+      if (!options.start || !options.end) {
+        throw new Error('`start` and `end` are required options')
+      }
 
-    return request.get(AMPLITUDE_DASHBOARD_ENDPOINT + '/export')
-      .auth(this.token, this.secretKey)
-      .query({
-        start: options.start,
-        end: options.end
-      })
+      const res = await axios
+        .get(`${AMPLITUDE_DASHBOARD_ENDPOINT}/export`, {
+          auth: {
+            username: this.token,
+            password: this.secretKey
+          },
+          params: {
+            start: options.start,
+            end: options.end
+          }
+        })
+
+      return res
+    } catch (err) {
+      if (err.response) {
+        throw new AmplitudeErrorResponse(err)
+      }
+
+      throw err
+    }
   }
 
-  userSearch (userSearchId: string): Promise<AmplitudeResponseBody> {
+  userSearch(userSearchId: string): Promise<AmplitudeResponseBody> {
     if (!this.secretKey) {
       throw new Error('secretKey must be set to use the userSearch method')
     }
@@ -129,22 +166,29 @@ export default class Amplitude {
       throw new Error('value to search for must be passed')
     }
 
-    return request.get(AMPLITUDE_DASHBOARD_ENDPOINT + '/usersearch')
-      .auth(this.token, this.secretKey)
-      .query({
-        user: userSearchId
+    return axiosErrorCatcher(axios
+      .get(`${AMPLITUDE_DASHBOARD_ENDPOINT}/usersearch`, {
+        auth: {
+          username: this.token,
+          password: this.secretKey
+        },
+        params: {
+          user: userSearchId
+        }
       })
-      .set('Accept', 'application/json')
-      .then(res => res.body)
+      .then(res => res.data))
   }
 
-  userActivity (amplitudeId: string | number, data?: AmplitudeUserActivityOptions): Promise<AmplitudeResponseBody> {
-    if (!data) {
-      data = {
+  userActivity(
+    amplitudeId: string | number,
+    params?: AmplitudeUserActivityOptions
+  ): Promise<AmplitudeResponseBody> {
+    if (!params) {
+      params = {
         user: amplitudeId
       }
     } else {
-      data.user = amplitudeId
+      params.user = amplitudeId
     }
 
     if (!this.secretKey) {
@@ -155,30 +199,42 @@ export default class Amplitude {
       throw new Error('Amplitude ID must be passed')
     }
 
-    return request.get(AMPLITUDE_DASHBOARD_ENDPOINT + '/useractivity')
-      .auth(this.token, this.secretKey)
-      .query(data)
-      .set('Accept', 'application/json')
-      .then(res => res.body)
+    return axiosErrorCatcher(axios
+      .get(`${AMPLITUDE_DASHBOARD_ENDPOINT}/useractivity`, {
+        auth: {
+          username: this.token,
+          password: this.secretKey
+        },
+        params
+      })
+      .then(res => res.data))
   }
 
-  eventSegmentation (data: AmplitudeSegmentationOptions): Promise<AmplitudeResponseBody> {
+  eventSegmentation(
+    params: AmplitudeSegmentationOptions
+  ): Promise<AmplitudeResponseBody> {
     if (!this.secretKey) {
-      throw new Error('secretKey must be set to use the eventSegmentation method')
+      throw new Error(
+        'secretKey must be set to use the eventSegmentation method'
+      )
     }
 
-    if (!data || !data.e || !data.start || !data.end) {
+    if (!params || !params.e || !params.start || !params.end) {
       throw new Error('`e`, `start` and `end` are required data properties')
     }
 
-    if (typeof data.e === 'object') {
-      data.e = JSON.stringify(data.e)
+    if (typeof params.e === 'object') {
+      params.e = JSON.stringify(params.e)
     }
 
-    return request.get(AMPLITUDE_DASHBOARD_ENDPOINT + '/events/segmentation')
-      .auth(this.token, this.secretKey)
-      .query(data)
-      .set('Accept', 'application/json')
-      .then(res => res.body)
+    return axiosErrorCatcher(axios
+      .get(`${AMPLITUDE_DASHBOARD_ENDPOINT}/events/segmentation`, {
+        auth: {
+          username: this.token,
+          password: this.secretKey
+        },
+        params
+      })
+      .then(res => res.data))
   }
 }

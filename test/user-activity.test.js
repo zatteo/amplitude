@@ -1,5 +1,5 @@
 const nock = require('nock')
-const Amplitude = require('../src')
+const Amplitude = require('../src').default
 
 function generateMockedRequest (userSearchId, matches, status) {
   let query = { user: userSearchId }
@@ -119,8 +119,6 @@ describe('userActivity', function () {
     return this.amplitude.userActivity(amplitudeId).then((res) => {
       expect(res.type).to.eql(this.userSearchIds.found_by_user_props)
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 
@@ -131,8 +129,6 @@ describe('userActivity', function () {
     return this.amplitude.userActivity(search, { limit: 0 }).then((res) => {
       expect(res).to.eql(this.userSearchIds.found)
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 
@@ -143,8 +139,6 @@ describe('userActivity', function () {
     return this.amplitude.userActivity(search).then((res) => {
       expect(res).to.eql(this.userSearchIds.not_found)
       mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
     })
   })
 
@@ -156,8 +150,7 @@ describe('userActivity', function () {
       expect(res).not.to.exist
       throw new Error('Should not have resolved')
     }).catch((err) => {
-      expect(err.status).to.eql(403)
-      expect(err.message).to.eql('Forbidden')
+      expect(err.status).to.eq(403)
       mockedRequest.done()
     })
   })

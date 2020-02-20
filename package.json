@@ -3,10 +3,11 @@
   "version": "5.0.1-next.2",
   "description": "A node wrapper for Amplitude analytics http api",
   "author": "Blade Barringer <blade@crookedneighbor.com>",
-  "main": "dist/index.js",
+  "main": "entry.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "entry.js"
   ],
   "engines": {
     "node": ">=8.10.0"
@@ -44,7 +45,7 @@
     "prerelease": "npm version prerelease --preid=next && npm publish --tag next",
     "prepare": "npm run build",
     "prepublishOnly": "npm run test",
-    "test": "npm run lint && npm run build && nyc --reporter=lcov --reporter=text mocha",
+    "test": "npm run lint && nyc --reporter=lcov --reporter=text mocha",
     "tdd": "mocha --watch"
   },
   "repository": {
@@ -59,8 +60,7 @@
     "amplitude"
   ],
   "dependencies": {
-    "@types/superagent": "^4.1.7",
-    "superagent": "^5.2.1"
+    "axios": "^0.19.2"
   },
   "devDependencies": {
     "@types/chai": "^4.2.8",
@@ -94,7 +94,6 @@
     "colors": true,
     "reporter": "spec",
     "timeout": 8000,
-    "growl": true,
     "check-leaks": true,
     "recursive": true,
     "require": "ts-node/register",
