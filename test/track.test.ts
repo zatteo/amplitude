@@ -2,7 +2,10 @@ import { expect } from 'chai'
 import nock, { DataMatcherMap } from 'nock'
 import Amplitude, { AmplitudeRequestData, AmplitudeResponseBody } from '../src'
 
-function generateMockedRequest (events: AmplitudeRequestData | Array<AmplitudeRequestData>, status: number): nock.Scope {
+function generateMockedRequest(
+  events: AmplitudeRequestData | Array<AmplitudeRequestData>,
+  status: number
+): nock.Scope {
   if (!Array.isArray(events)) {
     events = [events]
   }
@@ -42,7 +45,7 @@ describe('track', () => {
   it('resolves when the request succeeds', () => {
     const mockedRequest = generateMockedRequest(mockRequestData, 200)
 
-    return amplitude.track(data).then((res) => {
+    return amplitude.track(data).then(res => {
       expect(res).to.eql({ some: 'data' })
       mockedRequest.done()
     })
@@ -97,12 +100,15 @@ describe('track', () => {
 
     const mockedRequest = generateMockedRequest(mockRequestData, 200)
 
-    return amplitude.track(data).then((res) => {
-      expect(res).to.eql({ some: 'data' })
-      mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
-    })
+    return amplitude
+      .track(data)
+      .then(res => {
+        expect(res).to.eql({ some: 'data' })
+        mockedRequest.done()
+      })
+      .catch(err => {
+        expect(err).to.equal(undefined)
+      })
   })
 
   it('can override the device id set on initialization', () => {
@@ -114,12 +120,15 @@ describe('track', () => {
     data.device_id = 'another_device_id'
     const mockedRequest = generateMockedRequest(mockRequestData, 200)
 
-    return amplitude.track(data).then((res) => {
-      expect(res).to.eql({ some: 'data' })
-      mockedRequest.done()
-    }).catch((err) => {
-      expect(err).to.equal(undefined)
-    })
+    return amplitude
+      .track(data)
+      .then(res => {
+        expect(res).to.eql({ some: 'data' })
+        mockedRequest.done()
+      })
+      .catch(err => {
+        expect(err).to.equal(undefined)
+      })
   })
 
   it('rejects with an AmplitudeError when the request fails', async () => {
@@ -137,10 +146,10 @@ describe('track', () => {
   })
 
   it('can accept an array of event objects', () => {
-    const mockedRequest = generateMockedRequest([
-      mockRequestData,
-      mockRequestData
-    ], 200)
+    const mockedRequest = generateMockedRequest(
+      [mockRequestData, mockRequestData],
+      200
+    )
 
     return amplitude.track([data, data]).then(res => {
       expect(res).to.eql({ some: 'data' })

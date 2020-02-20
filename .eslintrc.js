@@ -1,7 +1,11 @@
 module.exports = {
   root: true,
   extends: [
+    'prettier',
     'eslint:recommended'
+  ],
+  plugins: [
+    'prettier'
   ],
   parserOptions: {
     ecmaVersion: 8
@@ -14,7 +18,8 @@ module.exports = {
     semi: ['error', 'never'],
     quotes: ['error', 'single'],
     'comma-dangle': 'error',
-    'object-curly-spacing': ['error', 'always']
+    'object-curly-spacing': ['error', 'always'],
+    'prettier/prettier': 'error'
   },
   overrides: [
     {
@@ -26,7 +31,10 @@ module.exports = {
       parser: '@typescript-eslint/parser',
       plugins: [
         '@typescript-eslint'
-      ]
+      ],
+      rules: {
+        '@typescript-eslint/member-delimiter-style': 'off'
+      }
     }
   ]
 }

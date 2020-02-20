@@ -1,4 +1,4 @@
-export type StringMap = { [key: string]: string };
+export type StringMap = { [key: string]: string }
 
 export type AvailableCamelCaseToSnakeCasePropertyMap =
   | 'user_id'
@@ -14,4 +14,4 @@ export type AvailableCamelCaseToSnakeCasePropertyMap =
   | 'device_manufacturer'
   | 'device_model'
   | 'location_lat'
-  | 'location_lng';
+  | 'location_lng'

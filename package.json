@@ -75,10 +75,15 @@
     "codecov": "^3.6.5",
     "ecmascript-version-detector": "^1.0.3",
     "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
     "glob": "^7.1.6",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.7",
     "mocha": "^7.0.1",
     "nock": "^11.8.2",
     "nyc": "^15.0.0",
+    "prettier": "^1.19.1",
     "sinon": "^8.1.1",
     "sinon-chai": "^3.4.0",
     "ts-node": "^8.6.2",
@@ -101,5 +106,13 @@
       "ts",
       "js"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts}": "eslint --cache --fix"
   }
 }

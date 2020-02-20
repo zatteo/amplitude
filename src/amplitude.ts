@@ -16,7 +16,7 @@ const AMPLITUDE_TOKEN_ENDPOINT = 'https://api.amplitude.com'
 const AMPLITUDE_DASHBOARD_ENDPOINT = 'https://amplitude.com/api/2'
 
 const camelCaseToSnakeCasePropertyMap: {
-  [key: string]: AvailableCamelCaseToSnakeCasePropertyMap;
+  [key: string]: AvailableCamelCaseToSnakeCasePropertyMap
 } = {
   userId: 'user_id',
   deviceId: 'device_id',
@@ -35,11 +35,11 @@ const camelCaseToSnakeCasePropertyMap: {
 }
 
 export default class Amplitude {
-  private readonly token: string;
-  private readonly secretKey?: string;
-  private readonly userId?: string;
-  private readonly deviceId?: string;
-  private readonly sessionId?: string;
+  private readonly token: string
+  private readonly secretKey?: string
+  private readonly userId?: string
+  private readonly deviceId?: string
+  private readonly sessionId?: string
 
   constructor(token: string, options: AmplitudeOptions = {}) {
     if (!token) {
@@ -100,12 +100,15 @@ export default class Amplitude {
       })
       .join('&')
 
-    return axiosErrorCatcher(axios.post(`${AMPLITUDE_TOKEN_ENDPOINT}/identify`, encodedParams, {
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded'
-      }
-    })
-      .then(res => res.data))
+    return axiosErrorCatcher(
+      axios
+        .post(`${AMPLITUDE_TOKEN_ENDPOINT}/identify`, encodedParams, {
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+          }
+        })
+        .then(res => res.data)
+    )
   }
 
   track(
@@ -120,9 +123,11 @@ export default class Amplitude {
       options
     }
 
-    return axiosErrorCatcher(axios
-      .post(`${AMPLITUDE_TOKEN_ENDPOINT}/2/httpapi`, params)
-      .then(res => res.data))
+    return axiosErrorCatcher(
+      axios
+        .post(`${AMPLITUDE_TOKEN_ENDPOINT}/2/httpapi`, params)
+        .then(res => res.data)
+    )
   }
 
   async export(options: AmplitudeExportOptions): Promise<AxiosResponse> {
@@ -135,17 +140,16 @@ export default class Amplitude {
         throw new Error('`start` and `end` are required options')
       }
 
-      const res = await axios
-        .get(`${AMPLITUDE_DASHBOARD_ENDPOINT}/export`, {
-          auth: {
-            username: this.token,
-            password: this.secretKey
-          },
-          params: {
-            start: options.start,
-            end: options.end
-          }
-        })
+      const res = await axios.get(`${AMPLITUDE_DASHBOARD_ENDPOINT}/export`, {
+        auth: {
+          username: this.token,
+          password: this.secretKey
+        },
+        params: {
+          start: options.start,
+          end: options.end
+        }
+      })
 
       return res
     } catch (err) {
@@ -166,17 +170,19 @@ export default class Amplitude {
       throw new Error('value to search for must be passed')
     }
 
-    return axiosErrorCatcher(axios
-      .get(`${AMPLITUDE_DASHBOARD_ENDPOINT}/usersearch`, {
-        auth: {
-          username: this.token,
-          password: this.secretKey
-        },
-        params: {
-          user: userSearchId
-        }
-      })
-      .then(res => res.data))
+    return axiosErrorCatcher(
+      axios
+        .get(`${AMPLITUDE_DASHBOARD_ENDPOINT}/usersearch`, {
+          auth: {
+            username: this.token,
+            password: this.secretKey
+          },
+          params: {
+            user: userSearchId
+          }
+        })
+        .then(res => res.data)
+    )
   }
 
   userActivity(
@@ -199,15 +205,17 @@ export default class Amplitude {
       throw new Error('Amplitude ID must be passed')
     }
 
-    return axiosErrorCatcher(axios
-      .get(`${AMPLITUDE_DASHBOARD_ENDPOINT}/useractivity`, {
-        auth: {
-          username: this.token,
-          password: this.secretKey
-        },
-        params
-      })
-      .then(res => res.data))
+    return axiosErrorCatcher(
+      axios
+        .get(`${AMPLITUDE_DASHBOARD_ENDPOINT}/useractivity`, {
+          auth: {
+            username: this.token,
+            password: this.secretKey
+          },
+          params
+        })
+        .then(res => res.data)
+    )
   }
 
   eventSegmentation(
@@ -227,14 +235,16 @@ export default class Amplitude {
       params.e = JSON.stringify(params.e)
     }
 
-    return axiosErrorCatcher(axios
-      .get(`${AMPLITUDE_DASHBOARD_ENDPOINT}/events/segmentation`, {
-        auth: {
-          username: this.token,
-          password: this.secretKey
-        },
-        params
-      })
-      .then(res => res.data))
+    return axiosErrorCatcher(
+      axios
+        .get(`${AMPLITUDE_DASHBOARD_ENDPOINT}/events/segmentation`, {
+          auth: {
+            username: this.token,
+            password: this.secretKey
+          },
+          params
+        })
+        .then(res => res.data)
+    )
   }
 }

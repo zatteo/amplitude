@@ -2,7 +2,7 @@ const Amplitude = require('../src').default
 const nock = require('nock')
 
 function generateMockedRequest(query, status) {
-  const mockedRequest = nock('https://amplitude.com')
+  return nock('https://amplitude.com')
     .defaultReplyHeaders({ 'Content-Type': 'application/zip' })
     .get('/api/2/export')
     .query(query)
@@ -11,8 +11,6 @@ function generateMockedRequest(query, status) {
       pass: 'key'
     })
     .reply(status)
-
-  return mockedRequest
 }
 
 describe('export', () => {
@@ -71,12 +69,10 @@ describe('export', () => {
   it('resolves a zip when succesful', () => {
     const mockedRequest = generateMockedRequest(options, 200)
 
-    return amplitude
-      .export(options)
-      .then(res => {
-        expect(res.headers['content-type']).to.eql('application/zip')
-        mockedRequest.done()
-      })
+    return amplitude.export(options).then(res => {
+      expect(res.headers['content-type']).to.eql('application/zip')
+      mockedRequest.done()
+    })
   })
 
   it('rejects with error when unsuccesful', () => {

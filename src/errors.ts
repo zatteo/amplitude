@@ -2,7 +2,7 @@ import { AxiosError } from 'axios'
 import { AmplitudeResponseBody } from './public'
 
 export class AmplitudeErrorResponse extends Error {
-  readonly status: number;
+  readonly status: number
 
   constructor(err: AxiosError) {
     super(err.message)
@@ -10,7 +10,9 @@ export class AmplitudeErrorResponse extends Error {
   }
 }
 
-export const axiosErrorCatcher = async (reqPromise: Promise<AmplitudeResponseBody>): Promise<AmplitudeResponseBody> => {
+export const axiosErrorCatcher = async (
+  reqPromise: Promise<AmplitudeResponseBody>
+): Promise<AmplitudeResponseBody> => {
   try {
     const res = await reqPromise
     return res
