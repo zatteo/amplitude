@@ -9,8 +9,6 @@ export interface AmplitudeOptions {
   session_id?: string
 }
 
-export type AmplitudeResponseBody = object
-
 export interface AmplitudeRequestData {
   /**
    * 	A readable ID specified by you. Must have a minimum length of 5 characters.
@@ -30,7 +28,6 @@ export interface AmplitudeRequestData {
    * please set "event_type" to $identify.
    */
   event_type?: string
-  eventType?: string
 
   /**
    * The timestamp of the event in milliseconds since epoch. If time is not sent

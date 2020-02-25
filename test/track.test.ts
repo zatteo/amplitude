@@ -1,6 +1,12 @@
 import { expect } from 'chai'
 import nock, { DataMatcherMap } from 'nock'
-import Amplitude, { AmplitudeRequestData, AmplitudeResponseBody } from '../src'
+import Amplitude, {
+  AmplitudeRequestData,
+  AmplitudeResponseBody,
+  AmplitudeTrackResponse
+} from '../src'
+
+const dateNow = 1582656323247
 
 function generateMockedRequest(
   events: AmplitudeRequestData | Array<AmplitudeRequestData>,
@@ -15,9 +21,16 @@ function generateMockedRequest(
     events
   }
 
+  const response: AmplitudeTrackResponse = {
+    code: status,
+    server_upload_time: dateNow,
+    payload_size_bytes: JSON.stringify(events).length,
+    events_ingested: events.length
+  }
+
   return nock('https://api.amplitude.com')
     .post('/2/httpapi', matcher)
-    .reply(status, { some: 'data' })
+    .reply(status, response)
 }
 
 describe('track', () => {
@@ -46,7 +59,7 @@ describe('track', () => {
     const mockedRequest = generateMockedRequest(mockRequestData, 200)
 
     return amplitude.track(data).then(res => {
-      expect(res).to.eql({ some: 'data' })
+      expect(res.code).to.eq(200)
       mockedRequest.done()
     })
   })
@@ -85,7 +98,12 @@ describe('track', () => {
     const mockedRequest = generateMockedRequest(mockRequestData, 200)
 
     return amplitude.track(data).then((res: AmplitudeResponseBody) => {
-      expect(res).to.eql({ some: 'data' })
+      expect(res).to.eql({
+        code: 200,
+        server_upload_time: dateNow,
+        payload_size_bytes: JSON.stringify([mockRequestData]).length,
+        events_ingested: 1
+      })
       mockedRequest.done()
     })
   })
@@ -103,7 +121,7 @@ describe('track', () => {
     return amplitude
       .track(data)
       .then(res => {
-        expect(res).to.eql({ some: 'data' })
+        expect(res.code).to.eq(200)
         mockedRequest.done()
       })
       .catch(err => {
@@ -123,7 +141,7 @@ describe('track', () => {
     return amplitude
       .track(data)
       .then(res => {
-        expect(res).to.eql({ some: 'data' })
+        expect(res.code).to.eq(200)
         mockedRequest.done()
       })
       .catch(err => {
@@ -141,21 +159,22 @@ describe('track', () => {
     }
 
     expect(err.status).to.eq(500)
-    expect(err.data).to.eql({
-      some: 'data'
-    })
+    expect(err.data.code).to.eq(500)
     // expect(err.message).to.eq('Internal Server Error')
     mockedRequest.done()
   })
 
   it('can accept an array of event objects', () => {
-    const mockedRequest = generateMockedRequest(
-      [mockRequestData, mockRequestData],
-      200
-    )
+    const eventData = [mockRequestData, mockRequestData]
+    const mockedRequest = generateMockedRequest(eventData, 200)
 
     return amplitude.track([data, data]).then(res => {
-      expect(res).to.eql({ some: 'data' })
+      expect(res).to.eql({
+        code: 200,
+        server_upload_time: dateNow,
+        payload_size_bytes: JSON.stringify(eventData).length,
+        events_ingested: 2
+      })
       mockedRequest.done()
     })
   })

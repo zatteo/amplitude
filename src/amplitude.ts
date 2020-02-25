@@ -2,18 +2,27 @@ import axios, { AxiosResponse } from 'axios'
 import { AvailableCamelCaseToSnakeCasePropertyMap, StringMap } from './types'
 import {
   AmplitudeOptions,
-  AmplitudeResponseBody,
   AmplitudeRequestData,
   AmplitudeUserActivityOptions,
   AmplitudeExportOptions,
   AmplitudeRequestDataOptions,
   AmplitudeSegmentationOptions
 } from './public'
+import {
+  AmplitudeTrackResponse,
+  AmplitudeIdentifyResponse,
+  AmplitudeUserSearchResponse,
+  AmplitudeUserActivityResponse,
+  AmplitudeResponseBody
+} from './responses'
 import { AmplitudePostRequestData } from './interfaces'
 import { AmplitudeErrorResponse, axiosErrorCatcher } from './errors'
 
 const AMPLITUDE_TOKEN_ENDPOINT = 'https://api.amplitude.com'
 const AMPLITUDE_DASHBOARD_ENDPOINT = 'https://amplitude.com/api/2'
+axios.defaults.headers.common['User-Agent'] = `amplitude/${
+  require('../package').version
+} node/${process.version} (${process.arch})`
 
 const camelCaseToSnakeCasePropertyMap: {
   [key: string]: AvailableCamelCaseToSnakeCasePropertyMap
@@ -84,7 +93,7 @@ export default class Amplitude {
 
   identify(
     data: AmplitudeRequestData | [AmplitudeRequestData]
-  ): Promise<AmplitudeResponseBody> {
+  ): Promise<AmplitudeIdentifyResponse> {
     const transformedData = this._generateRequestData(data)
     const params: StringMap = {
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -106,13 +115,13 @@ export default class Amplitude {
           }
         })
         .then(res => res.data)
-    )
+    ) as Promise<AmplitudeIdentifyResponse>
   }
 
   track(
     data: AmplitudeRequestData | Array<AmplitudeRequestData>,
     options?: AmplitudeRequestDataOptions
-  ): Promise<AmplitudeResponseBody> {
+  ): Promise<AmplitudeTrackResponse> {
     const transformedData = this._generateRequestData(data)
     const params = {
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -125,7 +134,7 @@ export default class Amplitude {
       axios
         .post(`${AMPLITUDE_TOKEN_ENDPOINT}/2/httpapi`, params)
         .then(res => res.data)
-    )
+    ) as Promise<AmplitudeTrackResponse>
   }
 
   async export(options: AmplitudeExportOptions): Promise<AxiosResponse> {
@@ -159,7 +168,7 @@ export default class Amplitude {
     }
   }
 
-  userSearch(userSearchId: string): Promise<AmplitudeResponseBody> {
+  userSearch(userSearchId: string): Promise<AmplitudeUserSearchResponse> {
     if (!this.secretKey) {
       throw new Error('secretKey must be set to use the userSearch method')
     }
@@ -180,13 +189,13 @@ export default class Amplitude {
           }
         })
         .then(res => res.data)
-    )
+    ) as Promise<AmplitudeUserSearchResponse>
   }
 
   userActivity(
     amplitudeId: string | number,
     params?: AmplitudeUserActivityOptions
-  ): Promise<AmplitudeResponseBody> {
+  ): Promise<AmplitudeUserActivityResponse> {
     if (!params) {
       params = {
         user: amplitudeId
@@ -213,7 +222,7 @@ export default class Amplitude {
           params
         })
         .then(res => res.data)
-    )
+    ) as Promise<AmplitudeUserActivityResponse>
   }
 
   eventSegmentation(

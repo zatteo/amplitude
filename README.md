@@ -21,6 +21,8 @@ const Amplitude = require('amplitude')
 const amplitude = new Amplitude('api-token')
 ```
 
+See the [`examples/`](/examples) directory for further usage.
+
 ## Track an event
 
 Pass in any keys listed on the [Amplitude V2 HTTP API](https://help.amplitude.com/hc/en-us/articles/360032842391-HTTP-API-V2). The only required keys are `event_type` and either `user_id` or `device_id`. If you initialized the Amplitude object with a user/device id, they can be ignored when calling the track method. Note: the `user_id` and `device_id` must be 5 or more characters if passed.
