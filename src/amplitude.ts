@@ -66,8 +66,6 @@ export default class Amplitude {
         (obj: AmplitudeRequestData, key: string) => {
           const transformedKey = camelCaseToSnakeCasePropertyMap[key] || key
 
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-          // @ts-ignore
           obj[transformedKey] = item[key]
 
           return obj
