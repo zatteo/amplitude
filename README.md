@@ -75,9 +75,6 @@ The `identify` method allows you to [make changes to a user without sending an a
 var data = {
   user_id: 'some id', // only required if device id is not passed in
   device_id: 'some id', // only required if user id is not passed in
-  event_properties: {
-    //...
-  },
   user_properties: {
     //...
   }
@@ -91,9 +88,6 @@ var data = [
   {
     user_id: 'some id', // only required if device id is not passed in
     device_id: 'some id', // only required if user id is not passed in
-    event_properties: {
-      //...
-    },
     user_properties: {
       //...
     }
@@ -101,9 +95,6 @@ var data = [
   {
     user_id: 'some id', // only required if device id is not passed in
     device_id: 'some id', // only required if user id is not passed in
-    event_properties: {
-      //...
-    },
     user_properties: {
       //...
     }
